@@ -1,4 +1,4 @@
-package com.cipecma.trainup.ui.transform
+package com.cipecma.trainup.ui.program
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.cipecma.trainup.R
+import com.cipecma.trainup.databinding.FragmentProgramBinding
 import com.cipecma.trainup.databinding.FragmentTransformBinding
 import com.cipecma.trainup.databinding.ItemTransformBinding
 
@@ -22,9 +23,9 @@ import com.cipecma.trainup.databinding.ItemTransformBinding
  * the [RecyclerView] using LinearLayoutManager in a small screen
  * and shows items using GridLayoutManager in a large screen.
  */
-class TransformFragment : Fragment() {
+class ProgramFragment : Fragment() {
 
-    private var _binding: FragmentTransformBinding? = null
+    private var _binding: FragmentProgramBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,13 +36,11 @@ class TransformFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val transformViewModel = ViewModelProvider(this).get(TransformViewModel::class.java)
-        _binding = FragmentTransformBinding.inflate(inflater, container, false)
+        val transformViewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
+        _binding = FragmentProgramBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val recyclerView = binding.recyclerviewTransform
         val adapter = TransformAdapter()
-        recyclerView.adapter = adapter
         transformViewModel.texts.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }

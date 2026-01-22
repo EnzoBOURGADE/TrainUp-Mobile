@@ -1,8 +1,10 @@
 package com.cipecma.trainup
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -12,6 +14,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +25,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!AuthManager.isLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
@@ -38,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         binding.navView?.let {
             appBarConfiguration = AppBarConfiguration(
                 setOf(
-                    R.id.nav_transform, R.id.nav_reflow, R.id.nav_slideshow, R.id.nav_settings
+                    R.id.nav_program, R.id.nav_friends, R.id.nav_settings
                 ),
                 binding.drawerLayout
             )
@@ -46,10 +57,25 @@ class MainActivity : AppCompatActivity() {
             it.setupWithNavController(navController)
         }
 
+        binding.navView?.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_logout -> {
+                    logout()
+                    true
+                }
+                R.id.nav_settings -> {
+                    val navController = findNavController(R.id.nav_host_fragment_content_main)
+                    navController.navigate(R.id.nav_settings)
+                    true
+                }
+                else -> false
+            }
+        }
+
         binding.appBarMain.contentMain.bottomNavView?.let {
             appBarConfiguration = AppBarConfiguration(
                 setOf(
-                    R.id.nav_transform, R.id.nav_reflow, R.id.nav_slideshow
+                    R.id.nav_program, R.id.nav_friends, R.id.nav_settings
                 )
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
@@ -83,5 +109,21 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+
+    fun logout() {
+        AuthManager.setToken("")
+
+        getSharedPreferences("auth", MODE_PRIVATE)
+            .edit {
+                remove("token")
+                apply()
+            }
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+
+        Toast.makeText(this, "Déconnexion réussie", Toast.LENGTH_SHORT).show()
     }
 }

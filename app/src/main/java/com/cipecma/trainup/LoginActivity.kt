@@ -28,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         checkIfAlreadyLoggedIn()
 
         setContentView(R.layout.activity_login)

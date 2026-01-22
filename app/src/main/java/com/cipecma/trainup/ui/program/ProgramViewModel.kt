@@ -1,10 +1,10 @@
-package com.cipecma.trainup.ui.transform
+package com.cipecma.trainup.ui.program
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class TransformViewModel : ViewModel() {
+class ProgramViewModel : ViewModel() {
 
     private val _texts = MutableLiveData<List<String>>().apply {
         value = (1..16).mapIndexed { _, i ->
