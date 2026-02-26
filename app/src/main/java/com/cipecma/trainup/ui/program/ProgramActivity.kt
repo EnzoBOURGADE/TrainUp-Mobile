@@ -1,68 +1,47 @@
-package com.cipecma.trainup
+package com.cipecma.trainup.ui.program
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.cipecma.trainup.MainActivity
+import com.cipecma.trainup.R
 import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.network.RetrofitClient
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import retrofit2.http.Query
 
-class LoginActivity : AppCompatActivity() {
-
-    private lateinit var emailInput: EditText
-    private lateinit var passwordInput: EditText
-    private lateinit var loginButton: Button
-
+class ProgramActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setContentView(R.layout.fragment_program)
 
-        checkIfAlreadyLoggedIn()
-
-        setContentView(R.layout.activity_login)
-
-        emailInput = findViewById(R.id.emailInput)
-        passwordInput = findViewById(R.id.passwordInput)
-        loginButton = findViewById(R.id.loginButton)
-
-        loginButton.setOnClickListener {
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                login(email, password)
-            } else {
-                Toast.makeText(this, "Veuillez remplir tout les champs", Toast.LENGTH_SHORT).show()
-            }
-
-        }
-
+        program(id = null, name = null, id_user = null, id_cat = null)
     }
 
-    private fun checkIfAlreadyLoggedIn() {
-        val savedToken = getSharedPreferences("auth", MODE_PRIVATE)
-            .getString("token", null)
-        if (savedToken != null) {
-            AuthManager.setToken(savedToken)
-            goToMainActivity()
-        }
-    }
 
-    private fun login(email: String, password: String) {
-        Log.i("LOGIN", email)
-        Log.i("LOGIN", password)
+    private fun program(id: Int?, name: String?, id_user: Int?, id_cat: Int?) {
+        Log.i("PROGRAM", "program() appelée") // <-- vérifie si cette ligne apparaît
         lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.api.program(id, name, id_user, id_cat)
+                Log.i("PROGRAM", "Réponse reçue, taille=${response.size}") // <-- pour tester
+                response.forEach { program ->
+                    Log.i("PROGRAM", "id=${program.id}, name=${program.name}, id_user=${program.id_user}, id_cat=${program.id_cat}")
+                }
+            } catch (e: HttpException) {
+                Log.e("PROGRAM", "Erreur HTTP: ${e.code()}")
+            } catch (e: Exception) {
+                Log.e("PROGRAM", "Erreur: ${e.message}")
+            }
+        }
+        /*lifecycleScope.launch {
             try {
                 //Appel de notre fonction pour l'API
                 val response = RetrofitClient.api.login(email, password)
@@ -79,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
 
 
                 Toast.makeText(
-                    this@LoginActivity,
+                    this@ProgramActivity,
                     "Connexion réussie !",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -91,14 +70,14 @@ class LoginActivity : AppCompatActivity() {
                 when (e.code()) {
                     401 -> {
                         Toast.makeText(
-                            this@LoginActivity,
+                            this@ProgramActivity,
                             "Email ou mot de passe incorrect",
                             Toast.LENGTH_LONG
                         ).show()
                     }
                     else -> {
                         Toast.makeText(
-                            this@LoginActivity,
+                            this@ProgramActivity,
                             "Erreur serveur: ${e.code()}",
                             Toast.LENGTH_LONG
                         ).show()
@@ -108,12 +87,12 @@ class LoginActivity : AppCompatActivity() {
             catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(
-                    this@LoginActivity,
+                    this@ProgramActivity,
                     "Erreur de connexion: ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
+        }*/
     }
 
     private fun goToMainActivity() {

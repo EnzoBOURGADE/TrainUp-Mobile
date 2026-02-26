@@ -1,13 +1,12 @@
-package com.cipecma.trainup.ui.friends
-
+package com.cipecma.trainup.ui.slideshow
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class FriendsViewModel : ViewModel() {
+class SlideshowViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is friends Fragment"
+        value = "This is slideshow Fragment"
     }
     val text: LiveData<String> = _text
 }

@@ -5,23 +5,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,90 +36,99 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        // FAB simple
         binding.appBarMain.fab?.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+                .setAnchorView(R.id.fab)
+                .show()
         }
 
+        // Récupère le NavController une seule fois
         val navHostFragment =
-            (supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?)!!
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         val navController = navHostFragment.navController
 
-        binding.navView?.let {
-            appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.nav_program, R.id.nav_friends, R.id.nav_settings
-                ),
-                binding.drawerLayout
-            )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            it.setupWithNavController(navController)
-        }
+        // Configuration de l'AppBar pour le drawer
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_program,
+                R.id.nav_reflow,
+                R.id.nav_slideshow,
+                R.id.nav_settings
+            ),
+            binding.drawerLayout
+        )
 
-        binding.navView?.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_logout -> {
-                    logout()
-                    true
+        // Lien AppBar + NavController
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Drawer NavigationView
+        binding.navView?.let { navView ->
+            navView.setupWithNavController(navController)
+
+            // Interception uniquement du logout
+            navView.setNavigationItemSelectedListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.nav_logout -> {
+                        logout()
+                        true
+                    }
+                    else -> {
+                        val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
+                        if (handled) binding.drawerLayout?.closeDrawers()
+                        handled
+                    }
                 }
-                R.id.nav_settings -> {
-                    val navController = findNavController(R.id.nav_host_fragment_content_main)
-                    navController.navigate(R.id.nav_settings)
-                    true
-                }
-                else -> false
             }
         }
 
-        binding.appBarMain.contentMain.bottomNavView?.let {
-            appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.nav_program, R.id.nav_friends, R.id.nav_settings
-                )
-            )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            it.setupWithNavController(navController)
+        // BottomNavigationView
+        binding.appBarMain.contentMain.bottomNavView?.let { bottomNav ->
+            bottomNav.setupWithNavController(navController)
         }
     }
 
+    // Options menu si nécessaire
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val result = super.onCreateOptionsMenu(menu)
-        // Using findViewById because NavigationView exists in different layout files
-        // between w600dp and w1240dp
         val navView: NavigationView? = findViewById(R.id.nav_view)
         if (navView == null) {
-            // The navigation drawer already has the items including the items in the overflow menu
-            // We only inflate the overflow menu if the navigation drawer isn't visible
             menuInflater.inflate(R.menu.overflow, menu)
         }
-        return result
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_settings -> {
-                val navController = findNavController(R.id.nav_host_fragment_content_main)
-                navController.navigate(R.id.nav_settings)
-            }
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        return when (item.itemId) {
+            R.id.nav_settings -> { navController.navigate(R.id.nav_settings); true }
+            R.id.nav_program -> { navController.navigate(R.id.nav_program); true }
+            R.id.nav_slideshow -> { navController.navigate(R.id.nav_slideshow); true }
+            R.id.nav_reflow -> { navController.navigate(R.id.nav_reflow); true }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
+    // Support pour la flèche “up”
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        val navController = navHostFragment.navController
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-
-    fun logout() {
+    // Logout propre
+    private fun logout() {
         AuthManager.setToken("")
 
-        getSharedPreferences("auth", MODE_PRIVATE)
-            .edit {
-                remove("token")
-                apply()
-            }
+        getSharedPreferences("auth", MODE_PRIVATE).edit {
+            remove("token")
+            apply()
+        }
+
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

@@ -1,4 +1,4 @@
-package com.cipecma.trainup.ui.program
+package com.cipecma.myapplicationtest.ui.transform
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,9 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cipecma.trainup.R
-import com.cipecma.trainup.databinding.FragmentProgramBinding
-import com.cipecma.trainup.databinding.ItemTransformBinding
+import com.cipecma.myapplicationtest.R
+import com.cipecma.myapplicationtest.databinding.FragmentTransformBinding
+import com.cipecma.myapplicationtest.databinding.ItemTransformBinding
 
 /**
  * Fragment that demonstrates a responsive layout pattern where the format of the content
@@ -22,9 +22,9 @@ import com.cipecma.trainup.databinding.ItemTransformBinding
  * the [RecyclerView] using LinearLayoutManager in a small screen
  * and shows items using GridLayoutManager in a large screen.
  */
-class ProgramFragment : Fragment() {
+class TransformFragment : Fragment() {
 
-    private var _binding: FragmentProgramBinding? = null
+    private var _binding: FragmentTransformBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,14 +35,14 @@ class ProgramFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val programViewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
-        _binding = FragmentProgramBinding.inflate(inflater, container, false)
+        val transformViewModel = ViewModelProvider(this).get(TransformViewModel::class.java)
+        _binding = FragmentTransformBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val recyclerView = binding.recyclerviewProgram
-        val adapter = ProgramAdapter()
-        recyclerView?.adapter = adapter
-        programViewModel.texts.observe(viewLifecycleOwner) {
+        val recyclerView = binding.recyclerviewTransform
+        val adapter = TransformAdapter()
+        recyclerView.adapter = adapter
+        transformViewModel.texts.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
         return root
@@ -53,8 +53,8 @@ class ProgramFragment : Fragment() {
         _binding = null
     }
 
-    class ProgramAdapter :
-        ListAdapter<String, ProgramViewHolder>(object : DiffUtil.ItemCallback<String>() {
+    class TransformAdapter :
+        ListAdapter<String, TransformViewHolder>(object : DiffUtil.ItemCallback<String>() {
 
             override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
                 oldItem == newItem
@@ -82,12 +82,12 @@ class ProgramFragment : Fragment() {
             R.drawable.avatar_16,
         )
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransformViewHolder {
             val binding = ItemTransformBinding.inflate(LayoutInflater.from(parent.context))
-            return ProgramViewHolder(binding)
+            return TransformViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: ProgramViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: TransformViewHolder, position: Int) {
             holder.textView.text = getItem(position)
             holder.imageView.setImageDrawable(
                 ResourcesCompat.getDrawable(holder.imageView.resources, drawables[position], null)
@@ -95,7 +95,7 @@ class ProgramFragment : Fragment() {
         }
     }
 
-    class ProgramViewHolder(binding: ItemTransformBinding) :
+    class TransformViewHolder(binding: ItemTransformBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         val imageView: ImageView = binding.imageViewItemTransform
