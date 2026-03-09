@@ -41,6 +41,7 @@ class ProgramActivity : AppCompatActivity() {
                 Log.e("PROGRAM", "Erreur: ${e.message}")
             }
         }
+
         /*lifecycleScope.launch {
             try {
                 //Appel de notre fonction pour l'API
