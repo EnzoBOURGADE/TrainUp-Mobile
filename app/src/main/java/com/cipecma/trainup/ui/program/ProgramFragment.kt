@@ -41,7 +41,7 @@ class ProgramFragment : Fragment() {
             adapter.submitList(programs)
         }
 
-        viewModel.loadPrograms()
+        viewModel.loadAllPrograms()
 
         return root
     }

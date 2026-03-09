@@ -16,12 +16,7 @@ interface ApiService {
     ): LoginResponse
 
     @GET("program/all")
-    suspend fun program(
-        @Query("id") id: Int? = null,
-        @Query("name") name: String? = null,
-        @Query("id_user") id_user: Int? = null,
-        @Query("id_cat") id_cat: Int? = null
-    ): List<ProgramResponse>
+    suspend fun getAllPrograms(): List<ProgramResponse>
 
 
     //Les autres appels API ICIs
