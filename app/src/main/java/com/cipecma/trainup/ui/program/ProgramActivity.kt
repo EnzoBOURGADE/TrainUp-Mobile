@@ -25,7 +25,6 @@ class ProgramActivity : AppCompatActivity() {
         program(id = null, name = null, id_user = null, id_cat = null)
     }
 
-
     private fun program(id: Int?, name: String?, id_user: Int?, id_cat: Int?) {
         Log.i("PROGRAM", "program() appelée") // <-- vérifie si cette ligne apparaît
         lifecycleScope.launch {
