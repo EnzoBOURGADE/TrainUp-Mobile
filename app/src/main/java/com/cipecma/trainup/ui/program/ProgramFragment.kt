@@ -1,50 +1,48 @@
 package com.cipecma.trainup.ui.program
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cipecma.trainup.R
+import android.widget.TextView
 import com.cipecma.trainup.databinding.FragmentProgramBinding
 import com.cipecma.trainup.databinding.ItemTransformBinding
 
-/**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
- */
 class ProgramFragment : Fragment() {
 
     private var _binding: FragmentProgramBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var adapter: ProgramAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val programViewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
         _binding = FragmentProgramBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val root = binding.root
 
-        val recyclerView = binding.recyclerviewProgram
-        val adapter = ProgramAdapter()
-        recyclerView?.adapter = adapter
-        programViewModel.texts.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        val viewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
+
+        adapter = ProgramAdapter()
+        binding.recyclerviewProgram.adapter = adapter
+
+        viewModel.texts.observe(viewLifecycleOwner) { programs ->
+            programs.forEachIndexed { index, program ->
+                Log.i("PROGRAM", "program[$index] => $program")
+            }
+            adapter.submitList(programs)
         }
+
+        viewModel.loadPrograms()
+
         return root
     }
 
@@ -54,51 +52,30 @@ class ProgramFragment : Fragment() {
     }
 
     class ProgramAdapter :
-        ListAdapter<String, ProgramViewHolder>(object : DiffUtil.ItemCallback<String>() {
+        ListAdapter<ProgramItem, ProgramViewHolder>(object : DiffUtil.ItemCallback<ProgramItem>() {
+            override fun areItemsTheSame(oldItem: ProgramItem, newItem: ProgramItem): Boolean =
+                oldItem.id == newItem.id
 
-            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
-                oldItem == newItem
-
-            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
+            override fun areContentsTheSame(oldItem: ProgramItem, newItem: ProgramItem): Boolean =
                 oldItem == newItem
         }) {
 
-        private val drawables = listOf(
-            R.drawable.avatar_1,
-            R.drawable.avatar_2,
-            R.drawable.avatar_3,
-            R.drawable.avatar_4,
-            R.drawable.avatar_5,
-            R.drawable.avatar_6,
-            R.drawable.avatar_7,
-            R.drawable.avatar_8,
-            R.drawable.avatar_9,
-            R.drawable.avatar_10,
-            R.drawable.avatar_11,
-            R.drawable.avatar_12,
-            R.drawable.avatar_13,
-            R.drawable.avatar_14,
-            R.drawable.avatar_15,
-            R.drawable.avatar_16,
-        )
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramViewHolder {
-            val binding = ItemTransformBinding.inflate(LayoutInflater.from(parent.context))
+            val binding = ItemTransformBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
             return ProgramViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: ProgramViewHolder, position: Int) {
-            holder.textView.text = getItem(position)
-            holder.imageView.setImageDrawable(
-                ResourcesCompat.getDrawable(holder.imageView.resources, drawables[position], null)
-            )
+            val item = getItem(position)
+            holder.textView.text = item.toString()
         }
     }
 
-    class ProgramViewHolder(binding: ItemTransformBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        val imageView: ImageView = binding.imageViewItemTransform
+    class ProgramViewHolder(binding: ItemTransformBinding) : RecyclerView.ViewHolder(binding.root) {
         val textView: TextView = binding.textViewItemTransform
     }
 }

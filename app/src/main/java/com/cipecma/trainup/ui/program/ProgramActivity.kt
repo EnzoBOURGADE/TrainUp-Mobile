@@ -20,9 +20,11 @@ class ProgramActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.i("PROGRAM", "ProgramActivity onCreate")
+
         setContentView(R.layout.fragment_program)
 
-        program(id = null, name = null, id_user = null, id_cat = null)
+        program(null, null, null, null)
     }
 
     private fun program(id: Int?, name: String?, id_user: Int?, id_cat: Int?) {
