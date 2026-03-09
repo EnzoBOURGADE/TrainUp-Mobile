@@ -1,7 +1,6 @@
 package com.cipecma.trainup.ui.program
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,9 +34,6 @@ class ProgramFragment : Fragment() {
         binding.recyclerviewProgram.adapter = adapter
 
         viewModel.texts.observe(viewLifecycleOwner) { programs ->
-            programs.forEachIndexed { index, program ->
-                Log.i("PROGRAM", "program[$index] => $program")
-            }
             adapter.submitList(programs)
         }
 

@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_program"
-            android:icon="@drawable/ic_camera_black_24dp"
+            android:icon="@drawable/program"
             android:title="@string/menu_program" />
         <item
             android:id="@+id/nav_reflow"
@@ -18,7 +18,7 @@
             android:title="@string/menu_slideshow" />
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_slideshow_black_24dp"
+            android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/menu_settings" />
     </group>
 </menu>

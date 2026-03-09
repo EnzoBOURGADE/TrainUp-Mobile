@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_program,
-                R.id.nav_reflow,
+                R.id.nav_exercices,
                 R.id.nav_slideshow,
                 R.id.nav_settings
             ),

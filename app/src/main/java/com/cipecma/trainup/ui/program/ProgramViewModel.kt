@@ -14,7 +14,6 @@ class ProgramViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.api.getAllPrograms()
-                Log.i("PROGRAM", "API response size=${response.size}")
 
                 _texts.value = response.map { r ->
                     ProgramItem(
