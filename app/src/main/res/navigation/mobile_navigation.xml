@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/nav_program">
+    app:startDestination="@id/nav_home">
 
     <fragment
         android:id="@+id/nav_program"
@@ -12,16 +12,16 @@
         tools:layout="@layout/fragment_program" />
 
     <fragment
-        android:id="@+id/nav_reflow"
-        android:name="com.cipecma.trainup.ui.reflow.ReflowFragment"
-        android:label="@string/menu_reflow"
-        tools:layout="@layout/fragment_reflow" />
+        android:id="@+id/nav_home"
+        android:name="com.cipecma.trainup.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.cipecma.trainup.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_friends"
+        android:name="com.cipecma.trainup.ui.friends.FriendsFragment"
+        android:label="@string/menu_friends"
+        tools:layout="@layout/fragment_friends" />
 
     <fragment
         android:id="@+id/nav_settings"

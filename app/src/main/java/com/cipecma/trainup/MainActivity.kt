@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_program,
-                R.id.nav_exercices,
-                R.id.nav_slideshow,
+                R.id.nav_home,
+                R.id.nav_friends,
                 R.id.nav_settings
             ),
             binding.drawerLayout
@@ -106,8 +106,8 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.nav_settings -> { navController.navigate(R.id.nav_settings); true }
             R.id.nav_program -> { navController.navigate(R.id.nav_program); true }
-            R.id.nav_slideshow -> { navController.navigate(R.id.nav_slideshow); true }
-            R.id.nav_reflow -> { navController.navigate(R.id.nav_reflow); true }
+            R.id.nav_friends -> { navController.navigate(R.id.nav_friends); true }
+            R.id.nav_home -> { navController.navigate(R.id.nav_home); true }
             else -> super.onOptionsItemSelected(item)
         }
     }

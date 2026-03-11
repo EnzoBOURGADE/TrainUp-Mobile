@@ -7,8 +7,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     private const val BASER_URL = "https://slam.cipecma.net/2426/ebourgade/trainup/api/"
-    private val publicClient = OkHttpClient.Builder().build()
-
     private val authenticatedClient: OkHttpClient
         get() = OkHttpClient.Builder()
             .addInterceptor{ chain ->
