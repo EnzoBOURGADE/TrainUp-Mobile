@@ -5,13 +5,6 @@ import retrofit2.http.*
 import retrofit2.http.FormUrlEncoded
 import java.sql.Time
 
-data class LoginRequest(val email: String, val password: String)
-data class LoginResponse(val token: String)
-
-data class ProgramResponse(val id: Int, val name: String, val id_user: Int, val id_cat: Int)
-
-data class FriendsResponse(val id_user_1: Int, val id_user_2: Int)
-
 interface ApiService {
     @FormUrlEncoded
     @POST("auth/login")
@@ -30,3 +23,14 @@ interface ApiService {
     //Les autres appels API ICIs
 
 }
+
+data class LoginRequest(val email: String, val password: String)
+data class LoginResponse(val token: String)
+
+data class ProgramResponse(val id: Int, val name: String, val id_user: Int, val id_cat: Int)
+
+data class FriendsResponse(val id_user_1: Int, val id_user_2: Int)
+
+data class ProgramItem(val id: Int, val name: String)
+
+data class FriendsItem(val id_user_1: Int, val id_user_2: Int)

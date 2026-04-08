@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
 import com.cipecma.trainup.databinding.FragmentFriendsBinding
 import com.cipecma.trainup.databinding.ItemTransformBinding
+import com.cipecma.trainup.network.FriendsItem
 
 class FriendsFragment : Fragment() {
 

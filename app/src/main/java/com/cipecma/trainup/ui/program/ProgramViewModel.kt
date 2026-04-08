@@ -3,8 +3,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cipecma.trainup.network.ProgramItem
 import com.cipecma.trainup.network.RetrofitClient
-import com.cipecma.trainup.ui.program.ProgramItem
 import kotlinx.coroutines.launch
 
 class ProgramViewModel : ViewModel() {
@@ -18,9 +18,7 @@ class ProgramViewModel : ViewModel() {
                 _texts.value = response.map { r ->
                     ProgramItem(
                         id = r.id,
-                        name = r.name,
-                        id_user = r.id_user,
-                        id_cat = r.id_cat
+                        name = r.name
                     )
                 }
             } catch (e: Exception) {

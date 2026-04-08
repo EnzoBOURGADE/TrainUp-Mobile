@@ -10,11 +10,11 @@
             android:title="@string/menu_program" />
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_gallery_black_24dp"
+            android:icon="@drawable/house_solid_full"
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_friends"
-            android:icon="@drawable/ic_slideshow_black_24dp"
+            android:icon="@drawable/user_group_solid_full"
             android:title="@string/menu_friends" />
     </group>
 </menu>

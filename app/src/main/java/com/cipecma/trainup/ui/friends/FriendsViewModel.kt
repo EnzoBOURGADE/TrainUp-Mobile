@@ -3,9 +3,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cipecma.trainup.network.FriendsItem
 import com.cipecma.trainup.network.RetrofitClient
-import com.cipecma.trainup.ui.friends.FriendsItem
-import com.cipecma.trainup.ui.program.ProgramItem
 import kotlinx.coroutines.launch
 
 class FriendsViewModel : ViewModel() {

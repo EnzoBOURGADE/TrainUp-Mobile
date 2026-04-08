@@ -36,14 +36,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        // FAB simple
-        binding.appBarMain.fab?.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab)
-                .show()
-        }
-
         // Récupère le NavController une seule fois
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
@@ -55,10 +47,26 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_program,
                 R.id.nav_home,
                 R.id.nav_friends,
+                R.id.nav_profil,
                 R.id.nav_settings
             ),
             binding.drawerLayout
         )
+
+        //Bouton + pour ajouter un programme
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.nav_program) {
+                binding.appBarMain.fab?.show()
+
+                binding.appBarMain.fab?.setOnClickListener { view ->
+                    Snackbar.make(view, "Ajout d'un Program", Snackbar.LENGTH_LONG)
+                        .setAnchorView(R.id.fab)
+                        .show()
+                }
+            } else {
+                binding.appBarMain.fab?.hide()
+            }
+        }
 
         // Lien AppBar + NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -108,6 +116,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_program -> { navController.navigate(R.id.nav_program); true }
             R.id.nav_friends -> { navController.navigate(R.id.nav_friends); true }
             R.id.nav_home -> { navController.navigate(R.id.nav_home); true }
+            R.id.nav_profil -> { navController.navigate(R.id.nav_profil); true }
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
+import com.cipecma.trainup.network.ProgramItem
 import com.cipecma.trainup.databinding.FragmentProgramBinding
 import com.cipecma.trainup.databinding.ItemTransformBinding
 
