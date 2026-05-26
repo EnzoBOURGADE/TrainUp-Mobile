@@ -2,6 +2,7 @@ package com.cipecma.trainup.auth
 
 object AuthManager {
     private var token: String? = null;
+    private var id_user: Int = -1;
 
     fun setToken(newToken: String) {
         token = newToken
@@ -14,4 +15,6 @@ object AuthManager {
     fun clearToken() {
         token = null
     }
+
+    fun getUserId(): Int = id_user
 }

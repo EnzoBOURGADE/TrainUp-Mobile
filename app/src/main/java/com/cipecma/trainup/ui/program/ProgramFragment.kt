@@ -1,25 +1,27 @@
 package com.cipecma.trainup.ui.program
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.ImageButton
 import android.widget.TextView
-import com.cipecma.trainup.network.ProgramItem
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import com.cipecma.trainup.R
+import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.FragmentProgramBinding
-import com.cipecma.trainup.databinding.ItemTransformBinding
+import com.cipecma.trainup.network.ApiService
+import com.cipecma.trainup.ui.program.ProgramViewModel
 
 class ProgramFragment : Fragment() {
 
     private var _binding: FragmentProgramBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var adapter: ProgramAdapter
+    private val programViewModel: ProgramViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,18 +29,43 @@ class ProgramFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProgramBinding.inflate(inflater, container, false)
-        val root = binding.root
+        val root: View = binding.root
 
-        val viewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
+        val recyclerView = binding.recyclerViewPrograms
 
-        adapter = ProgramAdapter()
-        binding.recyclerviewProgram.adapter = adapter
-
-        viewModel.texts.observe(viewLifecycleOwner) { programs ->
-            adapter.submitList(programs)
+        val currentUserId: Int = AuthManager.getUserId()
+        if (currentUserId != -1) {
+            programViewModel.fetchPrograms(userId = currentUserId)
         }
 
-        viewModel.loadAllPrograms()
+        programViewModel.programNames.observe(viewLifecycleOwner) { programs ->
+            if (programs.isNotEmpty()) {
+                val adapter = ProgramAdapter(programs, onClick = { program ->
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Supprimer le programme")
+                        .setMessage("Voulez-vous vraiment supprimer ${program.name} ?")
+                        .setPositiveButton("Supprimer") { _, _ ->
+                            programViewModel.deleteProgram(program.id, currentUserId)
+                            android.widget.Toast.makeText(requireContext(), "Programme supprimé", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("Annuler", null)
+                        .show()
+                },
+                    onEditClick = { program ->
+                        val bundle = Bundle().apply {
+                            putString("programNameKey", program.name)
+                            putInt("programIdKey", program.id)
+                            putInt("userId", currentUserId)
+                        }
+                        //findNavController().navigate(R.id.nav_edit_program, bundle)
+                    }
+                )
+                recyclerView.adapter = adapter
+            } else {
+                Log.d("PROGRAM_STATUS", "La liste est vide ou l'API n'a pas répondu.")
+            }
+        }
+        programViewModel.fetchPrograms(currentUserId)
 
         return root
     }
@@ -48,31 +75,36 @@ class ProgramFragment : Fragment() {
         _binding = null
     }
 
-    class ProgramAdapter :
-        ListAdapter<ProgramItem, ProgramViewHolder>(object : DiffUtil.ItemCallback<ProgramItem>() {
-            override fun areItemsTheSame(oldItem: ProgramItem, newItem: ProgramItem): Boolean =
-                oldItem.id == newItem.id
+    class ProgramAdapter(
+        private val programs: List<ApiService.Program>,
+        private val onClick: (ApiService.Program) -> Unit,
+        private val onEditClick: (ApiService.Program) -> Unit
+    ) : RecyclerView.Adapter<ProgramAdapter.ViewHolder>() {
 
-            override fun areContentsTheSame(oldItem: ProgramItem, newItem: ProgramItem): Boolean =
-                oldItem == newItem
-        }) {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramViewHolder {
-            val binding = ItemTransformBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-            return ProgramViewHolder(binding)
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val text: TextView = view.findViewById(R.id.textView)
+            val btnDelete: ImageButton = view.findViewById(R.id.btn_delete)
+            val btnEdit: ImageButton = view.findViewById(R.id.btn_edit)
         }
 
-        override fun onBindViewHolder(holder: ProgramViewHolder, position: Int) {
-            val item = getItem(position)
-            holder.textView.text = item.toString()
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_program, parent, false)
+            return ViewHolder(view)
         }
-    }
 
-    class ProgramViewHolder(binding: ItemTransformBinding) : RecyclerView.ViewHolder(binding.root) {
-        val textView: TextView = binding.textViewItemTransform
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val program = programs[position]
+            holder.text.text = program.name
+
+            holder.btnDelete.setOnClickListener {
+                onClick(program)
+            }
+
+            holder.btnEdit.setOnClickListener {
+                onEditClick(program)
+            }
+        }
+
+        override fun getItemCount() = programs.size
     }
 }
