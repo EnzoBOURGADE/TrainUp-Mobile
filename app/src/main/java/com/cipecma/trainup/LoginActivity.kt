@@ -121,4 +121,6 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         finish() //Empêcher de revenir au login avec le bouton retour
     }
+
+    //Ca fonctionne mdr
 }
