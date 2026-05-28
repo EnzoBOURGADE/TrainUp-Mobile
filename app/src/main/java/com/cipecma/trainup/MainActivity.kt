@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
     // Logout propre
     private fun logout() {
         AuthManager.setToken("")
+        AuthManager.setUserId(0)
 
         getSharedPreferences("auth", MODE_PRIVATE).edit {
             remove("token")

@@ -15,22 +15,37 @@ class ProgramViewModel : ViewModel() {
 
 
     fun fetchPrograms(userId: Int?) {
+
         viewModelScope.launch {
+
             try {
+
+                Log.d("DEBUG_API", "Appel API avec userId = $userId")
+
                 val response = RetrofitClient.api.getProgramNames(userId)
 
-                Log.d("DEBUG_API", "Succès ! Nombre de programmes : ${response.size}")
+                Log.d("DEBUG_API", "Réponse brute = $response")
 
-                if (response.isNotEmpty()) {
-                    Log.d("DEBUG_API", "Premier programme : ${response[0].name}")
+                Log.d("DEBUG_API", "Taille liste = ${response.size}")
+
+                response.forEach {
+
+                    Log.d("DEBUG_API", "Programme -> id=${it.id} name=${it.name}")
+
                 }
 
                 _programNames.value = response
+
             } catch (e: Exception) {
-                Log.e("DEBUG_API", "ERREUR LORS DE L'APPEL", e)
+
+                Log.e("DEBUG_API", "ERREUR API", e)
+
                 _programNames.value = emptyList()
+
             }
+
         }
+
     }
 
     fun deleteProgram(programId: Int?, userId: Int?) {

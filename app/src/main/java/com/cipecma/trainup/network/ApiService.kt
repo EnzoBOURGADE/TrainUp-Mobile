@@ -13,31 +13,31 @@ interface ApiService {
         @Field("password") password: String
     ): LoginResponse
 
-    @GET("programs/user/{id}")
+    @GET("program/user/{id}")
     suspend fun getProgramNames(@Path("id") userId: Int?): List<Program>
 
-    @GET("user/{id}")
+    @GET("users/{id}")
     suspend fun getNameById(@Path("id") userId: Int?): String
 
     @GET("friends/user/{id}")
     suspend fun getFriends(@Path("id") userId: Int?): List<Friends>
 
     @FormUrlEncoded
-    @POST("programs/delete")
+    @POST("program/delete")
     suspend fun deleteProgram(
         @Field("id") id: Int,
         @Field("id_user") userId: Int?
     ): Response<DeleteResponse>
 
     @FormUrlEncoded
-    @POST("programs/create")
+    @POST("program/create")
     suspend fun createProgram(
         @Field("name") name: String,
         @Field("id_user") userId: Int?
     ): Response<CreateResponse>
 
     @FormUrlEncoded
-    @POST("programs/update/{id}")
+    @POST("program/update/{id}")
     suspend fun updateProgram(
         @Path("id") id: Int?,
         @Field("name") name: String,

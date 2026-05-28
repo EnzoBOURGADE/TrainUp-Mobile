@@ -28,17 +28,31 @@ class ProgramFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("DEBUG_FRAGMENT", "ProgramFragment créé")
         _binding = FragmentProgramBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val recyclerView = binding.recyclerViewPrograms
 
         val currentUserId: Int = AuthManager.getUserId()
+
+        Log.d("DEBUG_USER", "User ID récupéré = $currentUserId")
         if (currentUserId != -1) {
+            Log.d("DEBUG_FLOW", "Avant fetchPrograms")
             programViewModel.fetchPrograms(userId = currentUserId)
+            Log.d("DEBUG_FLOW", "Apres fetchPrograms")
         }
 
         programViewModel.programNames.observe(viewLifecycleOwner) { programs ->
+            Log.d("DEBUG_PROGRAM", "Observer déclenché")
+
+            Log.d("DEBUG_PROGRAM", "Nombre programmes = ${programs.size}")
+
+            programs.forEach {
+
+                Log.d("DEBUG_PROGRAM", "Programme = ${it.name}")
+
+            }
             if (programs.isNotEmpty()) {
                 val adapter = ProgramAdapter(programs, onClick = { program ->
                     androidx.appcompat.app.AlertDialog.Builder(requireContext())
@@ -65,7 +79,6 @@ class ProgramFragment : Fragment() {
                 Log.d("PROGRAM_STATUS", "La liste est vide ou l'API n'a pas répondu.")
             }
         }
-        programViewModel.fetchPrograms(currentUserId)
 
         return root
     }
@@ -82,7 +95,7 @@ class ProgramFragment : Fragment() {
     ) : RecyclerView.Adapter<ProgramAdapter.ViewHolder>() {
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val text: TextView = view.findViewById(R.id.textView)
+            val text: TextView = view.findViewById(R.id.text_program_name)
             val btnDelete: ImageButton = view.findViewById(R.id.btn_delete)
             val btnEdit: ImageButton = view.findViewById(R.id.btn_edit)
         }

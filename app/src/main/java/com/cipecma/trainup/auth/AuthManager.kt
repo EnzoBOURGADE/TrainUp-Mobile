@@ -8,6 +8,10 @@ object AuthManager {
         token = newToken
     }
 
+    fun setUserId(userId: Int) {
+        id_user = userId
+    }
+
     fun getToken(): String? = token
 
     fun isLoggedIn(): Boolean = token != null

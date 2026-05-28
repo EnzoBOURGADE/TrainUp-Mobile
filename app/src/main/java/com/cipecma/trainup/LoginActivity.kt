@@ -51,10 +51,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkIfAlreadyLoggedIn() {
-        val savedToken = getSharedPreferences("auth", MODE_PRIVATE)
-            .getString("token", null)
-        if (savedToken != null) {
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        val savedToken = prefs.getString("token", null)
+        val savedUserId = prefs.getInt("user_id", -1)
+
+        if (savedToken != null && savedUserId != -1) {
             AuthManager.setToken(savedToken)
+            AuthManager.setUserId(savedUserId)
             goToMainActivity()
         }
     }
@@ -67,13 +70,18 @@ class LoginActivity : AppCompatActivity() {
                 //Appel de notre fonction pour l'API
                 val response = RetrofitClient.api.login(email, password)
 
+                Log.d("LOGIN_DEBUG", "Token = ${response.token}")
+                Log.d("LOGIN_DEBUG", "User ID = ${response.id_user}")
+
                 //Stocker le jeton
                 AuthManager.setToken(response.token)
+                AuthManager.setUserId(response.id_user)
 
                 //Sauvegarder le jeton de manière persistante (DISQUE DUR)
                 getSharedPreferences("auth", MODE_PRIVATE)
                     .edit {
                         putString("token", response.token)
+                        putInt("user_id", response.id_user)
                     }
 
 
