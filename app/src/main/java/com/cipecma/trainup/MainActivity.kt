@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
             binding.appBarMain.contentMain.bottomNavView?.let { bottomNav ->
 
-                if (destination.id == R.id.nav_profil) {
+                if (destination.id == R.id.nav_profil || destination.id == R.id.nav_settings) {
 
                     bottomNav.menu.setGroupCheckable(0, true, false)
 
