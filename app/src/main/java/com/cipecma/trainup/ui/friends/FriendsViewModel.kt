@@ -19,28 +19,37 @@ class FriendsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.api.getFriends(userId)
 
+
+
+                Log.d("DEBUG_RAW", response.toString())
+
+                Log.d("DEBUG_RAW", response.size.toString())
+
                 val result = mutableListOf<FriendDisplay>()
 
                 for (friendship in response) {
 
                     val friendId =
-                        if (friendship.id_user1 == AuthManager.getUserId()) {
-                            friendship.id_user2
+                        if (friendship.id_user_1 == AuthManager.getUserId()) {
+                            friendship.id_user_2
                         } else {
-                            friendship.id_user1
+                            friendship.id_user_1
                         }
 
-                    val friendName =
+                    val friend =
                         RetrofitClient.api.getNameById(friendId)
+
+                    Log.d("DEBUG_APII", friend.user.username)
 
                     result.add(
                         FriendDisplay(
                             id_friend = friendId,
-                            name_friend = friendName
+                            name_friend = friend.user.username
                         )
                     )
                 }
 
+                Log.d("DEBUG_API", result[0].name_friend)
                 _friends.value = result
 
             } catch (e: Exception) {

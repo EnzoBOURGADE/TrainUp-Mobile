@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.appBarMain.toolbar)
 
         // Récupère le NavController une seule fois
         val navHostFragment =
@@ -69,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Lien AppBar + NavController
+        setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         // Drawer NavigationView

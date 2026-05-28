@@ -9,11 +9,14 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.cipecma.trainup.R
 import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.FragmentFriendsBinding
-import com.cipecma.trainup.network.ApiService
+import com.cipecma.trainup.network.ApiService.Friends
+import com.cipecma.trainup.network.ApiService.FriendDisplay
+import com.cipecma.trainup.ui.friends.FriendsViewModel
 
 class FriendsFragment : Fragment() {
 
@@ -32,53 +35,43 @@ class FriendsFragment : Fragment() {
         val recyclerView = binding.recyclerViewFriends
 
         val currentUserId: Int = AuthManager.getUserId()
+
+        Log.d("DEBUG_ID", "Id user = ${currentUserId}")
+
         if (currentUserId != -1) {
             friendsViewModel.fetchFriends(userId = currentUserId)
         }
 
         friendsViewModel.Friends.observe(viewLifecycleOwner) { friends ->
+            Log.d("DEBUG_FRIENDS", "Observer déclenché")
+
+            Log.d("DEBUG_FRIENDS", "Nombre amitiés = ${friends.size}")
+
+            friends.forEach {
+
+                Log.d("DEBUG_FRIENDS", "Amitié = ${it.name_friend}")
+
+            }
+
 
             if (friends.isNotEmpty()) {
-
-                val adapter = FriendsAdapter(
-                    friends,
-                    onClick = { friend ->
-
-                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                            .setTitle("Supprimer l'ami")
-                            .setMessage(
-                                "Voulez-vous vraiment supprimer ${friend.name_friend} de vos amis ?"
-                            )
-                            .setPositiveButton("Supprimer") { _, _ ->
-
-                                friendsViewModel.deleteFriends(
-                                    friend.id_friend,
-                                    currentUserId
-                                )
-
-                                android.widget.Toast.makeText(
-                                    requireContext(),
-                                    "Ami supprimé",
-                                    android.widget.Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            .setNegativeButton("Annuler", null)
-                            .show()
-                    }
+                val adapter = FriendsAdapter(friends, onClick = { friend ->
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Supprimer l'amitié")
+                        .setMessage("Voulez-vous vraiment supprimer ${friend.name_friend} ?")
+                        .setPositiveButton("Supprimer") { _, _ ->
+                            friendsViewModel.deleteFriends(friend.id_friend, currentUserId)
+                            android.widget.Toast.makeText(requireContext(), "amitié supprimée", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("Annuler", null)
+                        .show()
+                }
                 )
-
                 recyclerView.adapter = adapter
-
             } else {
-
-                Log.d(
-                    "PROGRAM_STATUS",
-                    "La liste est vide ou l'API n'a pas répondu."
-                )
+                Log.d("FRIENDS_STATUS", "La liste est vide ou l'API n'a pas répondu.")
             }
         }
-
-        friendsViewModel.fetchFriends(currentUserId)
 
         return root
     }
@@ -89,12 +82,12 @@ class FriendsFragment : Fragment() {
     }
 
     class FriendsAdapter(
-        private val friends: List<ApiService.FriendDisplay>,
-        private val onClick: (ApiService.FriendDisplay) -> Unit,
-        ) : RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
+        private val friends: List<FriendDisplay>,
+        private val onClick: (FriendDisplay) -> Unit,
+    ) : RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val text: TextView = view.findViewById(R.id.textView)
+            val text: TextView = view.findViewById(R.id.friend_name)
             val btnDelete: ImageButton = view.findViewById(R.id.btn_delete)
         }
 

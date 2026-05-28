@@ -17,7 +17,7 @@ interface ApiService {
     suspend fun getProgramNames(@Path("id") userId: Int?): List<Program>
 
     @GET("users/{id}")
-    suspend fun getNameById(@Path("id") userId: Int?): String
+    suspend fun getNameById(@Path("id") userId: Int?): UserResponse
 
     @GET("friends/user/{id}")
     suspend fun getFriends(@Path("id") userId: Int?): List<Friends>
@@ -51,9 +51,12 @@ interface ApiService {
     )
 
     data class Friends(
-        var id_user1: Int,
-        var id_user2: Int,
-        var friend: String
+        var id_user_1: Int,
+        var id_user_2: Int
+    )
+
+    data class User (
+        var username: String
     )
 
     data class FriendDisplay(
@@ -82,5 +85,9 @@ interface ApiService {
     data class LoginResponse(
         val token: String,
         val id_user : Int,
+    )
+
+    data class UserResponse(
+        val user: User
     )
 }

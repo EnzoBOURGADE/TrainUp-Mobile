@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="trainup_theme">#a9d236</color>
     <color name="darkTrainup_theme">#366618</color>
+    <color name="login_background">#FFFFFF</color>
     <color name="blue">#2196F3</color>
     <color name="red">#F44336</color>
 </resources>
