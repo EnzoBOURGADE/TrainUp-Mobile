@@ -12,6 +12,7 @@
     <string name="menu_friends">Friends</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_profil">Profil</string>
+    <string name="menu_CreateProgram">Create program</string>
 
     <string name="menu_logout">Logout</string>
 

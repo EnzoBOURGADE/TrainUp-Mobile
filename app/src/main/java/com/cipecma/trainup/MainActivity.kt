@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.ActivityMainBinding
+import com.cipecma.trainup.network.RetrofitClient.api
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 
@@ -56,11 +57,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.nav_program) {
                 binding.appBarMain.fab?.show()
-
-                binding.appBarMain.fab?.setOnClickListener { view ->
-                    Snackbar.make(view, "Ajout d'un Program", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .show()
+                binding.appBarMain.fab?.setOnClickListener {
+                    navController.navigate(R.id.nav_create_program)
                 }
             } else {
                 binding.appBarMain.fab?.hide()
@@ -72,20 +70,17 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-
-            binding.appBarMain.contentMain.bottomNavView?.let { bottomNav ->
-
-                if (destination.id == R.id.nav_profil || destination.id == R.id.nav_settings) {
-
+            val bottomNav = binding.appBarMain.contentMain.bottomNavView ?: return@addOnDestinationChangedListener
+            val hideSelection = destination.id == R.id.nav_profil ||
+                    destination.id == R.id.nav_settings
+            bottomNav.post {
+                if (hideSelection) {
                     bottomNav.menu.setGroupCheckable(0, true, false)
-
                     for (i in 0 until bottomNav.menu.size()) {
                         bottomNav.menu.getItem(i).isChecked = false
                     }
-
-                } else {
-
                     bottomNav.menu.setGroupCheckable(0, true, true)
+                    bottomNav.selectedItemId = -1
                 }
             }
         }

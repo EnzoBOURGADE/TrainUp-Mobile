@@ -17,25 +17,33 @@ interface ApiService {
     @GET("program/user/{id}")
     suspend fun getProgramNames(@Path("id") userId: Int?): List<Program>
 
+    @GET("category-program/all")
+    suspend fun getCategoriesProgram(): List<CategoryProgram>
+
     @GET("users/{id}")
     suspend fun getNameById(@Path("id") userId: Int?): UserResponse
 
     @GET("friends/user/{id}")
     suspend fun getFriends(@Path("id") userId: Int?): List<Friends>
 
-    @FormUrlEncoded
-    @POST("program/delete")
+    @DELETE("program/delete/{id}")
     suspend fun deleteProgram(
-        @Field("id") id: Int,
-        @Field("id_user") userId: Int?
+        @Path("id") id: Int
     ): Response<DeleteResponse>
 
     @FormUrlEncoded
-    @POST("program/create")
+    @POST("program/save")
     suspend fun createProgram(
         @Field("name") name: String,
-        @Field("id_user") userId: Int?
+        @Field("id_user") userId: Int?,
+        @Field("id_cat") categoryId: Int
     ): Response<CreateResponse>
+
+    @POST("friends/delete/{id_user_1}/{id_user_2}")
+    suspend fun deleteFriends(
+        @Path("id_user_1") id1: Int,
+        @Path("id_user_2") id2: Int
+    ): Response<DeleteResponse>
 
     @FormUrlEncoded
     @POST("program/update/{id}")
@@ -48,12 +56,19 @@ interface ApiService {
 
     data class Program(
         val id: Int,
-        val name: String
+        val name: String,
+        val id_user: Int,
+        val id_cat: Int
     )
 
     data class Friends(
         var id_user_1: Int,
         var id_user_2: Int
+    )
+
+    data class CategoryProgram(
+        var id: Int,
+        var name: String
     )
 
     data class User (

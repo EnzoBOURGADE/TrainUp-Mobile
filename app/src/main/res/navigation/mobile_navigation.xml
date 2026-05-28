@@ -35,4 +35,10 @@
         android:label="@string/menu_profil"
         tools:layout="@layout/fragment_profil" />
 
+    <fragment
+        android:id="@+id/nav_create_program"
+        android:name="com.cipecma.trainup.ui.program.CreateProgramFragment"
+        android:label="@string/menu_CreateProgram"
+        tools:layout="@layout/fragment_createProgram" />
+
 </navigation>

@@ -36,20 +36,21 @@ class FriendsFragment : Fragment() {
 
         val currentUserId: Int = AuthManager.getUserId()
 
-        Log.d("DEBUG_ID", "Id user = ${currentUserId}")
-
+        Log.d("DEBUG_USER", "User ID récupéré = $currentUserId")
         if (currentUserId != -1) {
+            Log.d("DEBUG_FLOW", "Avant fetchFriends")
             friendsViewModel.fetchFriends(userId = currentUserId)
+            Log.d("DEBUG_FLOW", "Apres fetchFriends")
         }
 
         friendsViewModel.Friends.observe(viewLifecycleOwner) { friends ->
-            Log.d("DEBUG_FRIENDS", "Observer déclenché")
+            Log.d("DEBUG_PROGRAM", "Observer déclenché")
 
-            Log.d("DEBUG_FRIENDS", "Nombre amitiés = ${friends.size}")
+            Log.d("DEBUG_PROGRAM", "Nombre amitiés = ${friends.size}")
 
             friends.forEach {
 
-                Log.d("DEBUG_FRIENDS", "Amitié = ${it.name_friend}")
+                Log.d("DEBUG_PROGRAM", "Amitié = ${it.name_friend}")
 
             }
 
