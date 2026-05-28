@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.ActivityMainBinding
+import com.cipecma.trainup.network.RetrofitClient.api
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 
@@ -34,15 +35,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.appBarMain.toolbar)
-
-        // FAB simple
-        binding.appBarMain.fab?.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab)
-                .show()
-        }
 
         // Récupère le NavController une seule fois
         val navHostFragment =
@@ -53,15 +45,45 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_program,
-                R.id.nav_reflow,
-                R.id.nav_slideshow,
+                R.id.nav_home,
+                R.id.nav_friends,
+                R.id.nav_profil,
                 R.id.nav_settings
             ),
             binding.drawerLayout
         )
 
+        //Bouton + pour ajouter un programme
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.nav_program) {
+                binding.appBarMain.fab?.show()
+                binding.appBarMain.fab?.setOnClickListener {
+                    navController.navigate(R.id.nav_create_program)
+                }
+            } else {
+                binding.appBarMain.fab?.hide()
+            }
+        }
+
         // Lien AppBar + NavController
+        setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val bottomNav = binding.appBarMain.contentMain.bottomNavView ?: return@addOnDestinationChangedListener
+            val hideSelection = destination.id == R.id.nav_profil ||
+                    destination.id == R.id.nav_settings
+            bottomNav.post {
+                if (hideSelection) {
+                    bottomNav.menu.setGroupCheckable(0, true, false)
+                    for (i in 0 until bottomNav.menu.size()) {
+                        bottomNav.menu.getItem(i).isChecked = false
+                    }
+                    bottomNav.menu.setGroupCheckable(0, true, true)
+                    bottomNav.selectedItemId = -1
+                }
+            }
+        }
 
         // Drawer NavigationView
         binding.navView?.let { navView ->
@@ -106,8 +128,9 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.nav_settings -> { navController.navigate(R.id.nav_settings); true }
             R.id.nav_program -> { navController.navigate(R.id.nav_program); true }
-            R.id.nav_slideshow -> { navController.navigate(R.id.nav_slideshow); true }
-            R.id.nav_reflow -> { navController.navigate(R.id.nav_reflow); true }
+            R.id.nav_friends -> { navController.navigate(R.id.nav_friends); true }
+            R.id.nav_home -> { navController.navigate(R.id.nav_home); true }
+            R.id.nav_profil -> { navController.navigate(R.id.nav_profil); true }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -123,6 +146,7 @@ class MainActivity : AppCompatActivity() {
     // Logout propre
     private fun logout() {
         AuthManager.setToken("")
+        AuthManager.setUserId(0)
 
         getSharedPreferences("auth", MODE_PRIVATE).edit {
             remove("token")

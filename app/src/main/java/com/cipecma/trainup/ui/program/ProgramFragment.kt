@@ -1,50 +1,85 @@
 package com.cipecma.trainup.ui.program
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.cipecma.trainup.R
+import com.cipecma.trainup.auth.AuthManager
 import com.cipecma.trainup.databinding.FragmentProgramBinding
-import com.cipecma.trainup.databinding.ItemTransformBinding
+import com.cipecma.trainup.network.ApiService
+import com.cipecma.trainup.ui.program.ProgramViewModel
 
-/**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
- */
 class ProgramFragment : Fragment() {
 
     private var _binding: FragmentProgramBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    private val programViewModel: ProgramViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val programViewModel = ViewModelProvider(this).get(ProgramViewModel::class.java)
+        Log.d("DEBUG_FRAGMENT", "ProgramFragment créé")
         _binding = FragmentProgramBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val recyclerView = binding.recyclerviewProgram
-        val adapter = ProgramAdapter()
-        recyclerView?.adapter = adapter
-        programViewModel.texts.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        val recyclerView = binding.recyclerViewPrograms
+
+        val currentUserId: Int = AuthManager.getUserId()
+
+        Log.d("DEBUG_USER", "User ID récupéré = $currentUserId")
+        if (currentUserId != -1) {
+            Log.d("DEBUG_FLOW", "Avant fetchPrograms")
+            programViewModel.fetchPrograms(userId = currentUserId)
+            Log.d("DEBUG_FLOW", "Apres fetchPrograms")
         }
+
+        programViewModel.programNames.observe(viewLifecycleOwner) { programs ->
+            Log.d("DEBUG_PROGRAM", "Observer déclenché")
+
+            Log.d("DEBUG_PROGRAM", "Nombre programmes = ${programs.size}")
+
+            programs.forEach {
+
+                Log.d("DEBUG_PROGRAM", "Programme = ${it.name}")
+
+            }
+            if (programs.isNotEmpty()) {
+                val adapter = ProgramAdapter(programs, onClick = { program ->
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Supprimer le programme")
+                        .setMessage("Voulez-vous vraiment supprimer ${program.name} ?")
+                        .setPositiveButton("Supprimer") { _, _ ->
+                            programViewModel.deleteProgram(program.id, currentUserId)
+                            android.widget.Toast.makeText(requireContext(), "Programme supprimé", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("Annuler", null)
+                        .show()
+                },
+                    onEditClick = { program ->
+                        val bundle = Bundle().apply {
+                            putString("programNameKey", program.name)
+                            putInt("programIdKey", program.id)
+                            putInt("userId", currentUserId)
+                        }
+                        //findNavController().navigate(R.id.nav_edit_program, bundle)
+                    }
+                )
+                recyclerView.adapter = adapter
+            } else {
+                Log.d("PROGRAM_STATUS", "La liste est vide ou l'API n'a pas répondu.")
+            }
+        }
+
         return root
     }
 
@@ -53,52 +88,36 @@ class ProgramFragment : Fragment() {
         _binding = null
     }
 
-    class ProgramAdapter :
-        ListAdapter<String, ProgramViewHolder>(object : DiffUtil.ItemCallback<String>() {
+    class ProgramAdapter(
+        private val programs: List<ApiService.Program>,
+        private val onClick: (ApiService.Program) -> Unit,
+        private val onEditClick: (ApiService.Program) -> Unit
+    ) : RecyclerView.Adapter<ProgramAdapter.ViewHolder>() {
 
-            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
-                oldItem == newItem
-
-            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
-                oldItem == newItem
-        }) {
-
-        private val drawables = listOf(
-            R.drawable.avatar_1,
-            R.drawable.avatar_2,
-            R.drawable.avatar_3,
-            R.drawable.avatar_4,
-            R.drawable.avatar_5,
-            R.drawable.avatar_6,
-            R.drawable.avatar_7,
-            R.drawable.avatar_8,
-            R.drawable.avatar_9,
-            R.drawable.avatar_10,
-            R.drawable.avatar_11,
-            R.drawable.avatar_12,
-            R.drawable.avatar_13,
-            R.drawable.avatar_14,
-            R.drawable.avatar_15,
-            R.drawable.avatar_16,
-        )
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProgramViewHolder {
-            val binding = ItemTransformBinding.inflate(LayoutInflater.from(parent.context))
-            return ProgramViewHolder(binding)
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val text: TextView = view.findViewById(R.id.text_program_name)
+            val btnDelete: ImageButton = view.findViewById(R.id.btn_delete)
+            val btnEdit: ImageButton = view.findViewById(R.id.btn_edit)
         }
 
-        override fun onBindViewHolder(holder: ProgramViewHolder, position: Int) {
-            holder.textView.text = getItem(position)
-            holder.imageView.setImageDrawable(
-                ResourcesCompat.getDrawable(holder.imageView.resources, drawables[position], null)
-            )
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_program, parent, false)
+            return ViewHolder(view)
         }
-    }
 
-    class ProgramViewHolder(binding: ItemTransformBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val program = programs[position]
+            holder.text.text = program.name
 
-        val imageView: ImageView = binding.imageViewItemTransform
-        val textView: TextView = binding.textViewItemTransform
+            holder.btnDelete.setOnClickListener {
+                onClick(program)
+            }
+
+            holder.btnEdit.setOnClickListener {
+                onEditClick(program)
+            }
+        }
+
+        override fun getItemCount() = programs.size
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/text_program_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nom programme"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/btn_edit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:background="@color/blue"
+            android:src="@drawable/baseline_edit_24"
+            app:tint="@android:color/black"
+            android:scaleType="center"
+            android:padding="60dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_delete"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:background="@color/red"
+            android:src="@drawable/outline_delete_24"
+            app:tint="@android:color/black"
+            android:scaleType="center"
+            android:padding="60dp"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
