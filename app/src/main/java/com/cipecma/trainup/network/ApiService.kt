@@ -3,6 +3,7 @@ package com.cipecma.trainup.network
 import retrofit2.Response
 import retrofit2.http.*
 import retrofit2.http.FormUrlEncoded
+import java.util.TimeZone
 
 interface ApiService {
 
@@ -56,7 +57,17 @@ interface ApiService {
     )
 
     data class User (
-        var username: String
+        var username: String,
+        var email: String,
+        var first_name: String,
+        var last_name: String,
+        var birthdate: Date,
+        var created_at: Date,
+        var updated_at: Date
+    )
+
+    data class Date (
+        var date: String
     )
 
     data class FriendDisplay(

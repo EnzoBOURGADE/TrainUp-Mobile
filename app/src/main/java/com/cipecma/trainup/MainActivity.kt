@@ -71,6 +71,25 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+
+            binding.appBarMain.contentMain.bottomNavView?.let { bottomNav ->
+
+                if (destination.id == R.id.nav_profil) {
+
+                    bottomNav.menu.setGroupCheckable(0, true, false)
+
+                    for (i in 0 until bottomNav.menu.size()) {
+                        bottomNav.menu.getItem(i).isChecked = false
+                    }
+
+                } else {
+
+                    bottomNav.menu.setGroupCheckable(0, true, true)
+                }
+            }
+        }
+
         // Drawer NavigationView
         binding.navView?.let { navView ->
             navView.setupWithNavController(navController)
